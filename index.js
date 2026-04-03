@@ -17,12 +17,12 @@ function init() {
   heightInput.value = displayRect.height;
   polygonPoints = [];
   polygonFinished = false;
-  triangulation = [];
+  decomposition = [];
   targetRadius = window.devicePixelRatio * 10;
   undoButton.addEventListener("click", function() {
     if (polygonFinished) {
       polygonFinished = false;
-      triangulation = [];
+      decomposition = [];
       return;
     }
     polygonPoints.pop()
@@ -30,7 +30,7 @@ function init() {
   clearButton.addEventListener("click", function() {
     polygonFinished = false;
     polygonPoints = [];
-    triangulation = [];
+    decomposition = [];
   });
   generateButton.addEventListener("click", function() {
     const width = parseInt(widthInput.value);
@@ -38,23 +38,20 @@ function init() {
     const margin = parseInt(marginInput.value);
     polygonPoints = generateRandomPolygon(pointsInput.value, proximityInput.value, margin, margin, width - margin, height - margin);
     polygonFinished = true;
-    triangulation = [];
+    decomposition = [];
   });
   triangulateButton.addEventListener("click", function() {
     if (!polygonFinished) {
       return;
     }
     var fixedPoints = fixPolygon(polygonPoints);
-    triangulation = triangulatePolygon(fixedPoints);
+    decomposition = triangulatePolygon(fixedPoints);
     if (fixedPoints != polygonPoints) {
-      for (var triangle of triangulation) {
-        for (var i = 0; i < 3; i++) {
-          triangle[i] = fixedPoints.length - 1 - triangle[i];
+      for (var polygon of decomposition) {
+        for (var i = 0; i < polygon.length; i++) {
+          polygon[i] = fixedPoints.length - 1 - polygon[i];
         }
       }
-    }
-    if (triangulation.length != fixedPoints.length - 2) {
-      throw new Error("triangulation failed");
     }
   });
   displayCanvas.addEventListener("mouseup", function(event) {
@@ -95,13 +92,17 @@ function animate() {
     displayContext.stroke();
     displayContext.strokeStyle = "blue";
     displayContext.beginPath();
-    for (const t of triangulation) {
-      const start = t[0];
-      const end = t[2];
-      const distance = Math.abs(start - end);
-      if(distance > 1 && distance < polygonPoints.length - 1) {
-        displayContext.moveTo(polygonPoints[start].x, polygonPoints[start].y);
-        displayContext.lineTo(polygonPoints[end].x, polygonPoints[end].y);
+    for (const polygon of decomposition) {
+      for (let i = 0; i < polygon.length; i++) {
+        const idx1 = polygon[i];
+        const idx2 = polygon[(i + 1) % polygon.length];
+        const p1 = polygonPoints[idx1];
+        const p2 = polygonPoints[idx2];
+        const dist = Math.abs(idx1 - idx2);
+        if (dist > 1 && dist < polygonPoints.length - 1) {
+          displayContext.moveTo(p1.x, p1.y);
+          displayContext.lineTo(p2.x, p2.y);
+        }
       }
     }
     displayContext.stroke();
