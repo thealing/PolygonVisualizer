@@ -10,6 +10,7 @@ function init() {
   proximityInput = document.getElementById("proximity-input");
   generateButton = document.getElementById("generate-button");
   triangulateButton = document.getElementById("triangulate-button");
+  decomposeButton = document.getElementById("decompose-button");
   displayCanvas = document.getElementById("display-canvas");
   displayContext = displayCanvas.getContext("2d");
   const displayRect = displayCanvas.getBoundingClientRect();
@@ -46,8 +47,23 @@ function init() {
       return;
     }
     var fixedPoints = fixPolygon(polygonPoints);
+    decomposition = triangulatePolygon(fixedPoints);
+    console.log("triangulation size: " + decomposition.length);
+    if (fixedPoints != polygonPoints) {
+      for (var polygon of decomposition) {
+        for (var i = 0; i < polygon.length; i++) {
+          polygon[i] = fixedPoints.length - 1 - polygon[i];
+        }
+      }
+    }
+  });
+  decomposeButton.addEventListener("click", function() {
+    if (!polygonFinished) {
+      return;
+    }
+    var fixedPoints = fixPolygon(polygonPoints);
     decomposition = decomposePolygon(fixedPoints);
-    console.log("decomp size: " + decomposition.length);
+    console.log("decomposition size: " + decomposition.length);
     if (fixedPoints != polygonPoints) {
       for (var polygon of decomposition) {
         for (var i = 0; i < polygon.length; i++) {
