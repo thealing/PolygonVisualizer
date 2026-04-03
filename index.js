@@ -38,7 +38,7 @@ function init() {
     const height = parseInt(heightInput.value);
     const margin = parseInt(marginInput.value);
     polygonPoints = generateRandomPolygon(pointsInput.value, proximityInput.value, margin, margin, width - margin, height - margin);
-    console.log("polygon size: " + polygonPoints.length);
+    console.log("generated polygon size: " + polygonPoints.length);
     polygonFinished = true;
     decomposition = [];
   });
@@ -82,6 +82,7 @@ function init() {
     const r = targetRadius;
     if (polygonPoints.length > 0 && (x - polygonPoints[0].x) ** 2 + (y - polygonPoints[0].y) ** 2 < r ** 2) {
       polygonFinished = true;
+      console.log("drawn polygon size: " + polygonPoints.length);
       return;
     }
     if (polygonPoints.length > 0 && (x - polygonPoints[polygonPoints.length - 1].x) ** 2 + (y - polygonPoints[polygonPoints.length - 1].y) ** 2 < r ** 2) {

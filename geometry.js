@@ -197,9 +197,15 @@ function decomposePolygon(polygon) {
     ai = bi;
     bi = ci;
   }
+  var debug1 = 0;
+  var debug2 = 0;
   var dp = new Map();
+  function getKey(u) {
+    return [...u].sort().join(',');
+  }
   function decompose(u) {
-    var key = u.join(',');
+    debug1 += u.length;
+    var key = getKey(u);
     if (dp.has(key)) {
       return dp.get(key);
     }
@@ -210,8 +216,10 @@ function decomposePolygon(polygon) {
       for (var i = 0; i < l; i++) {
         var ci = u[i];
         if (!isConvex(v[ai], v[bi], v[ci])) {
+          console.log(key);
           var r = null;
           for (var j = 0; j < l; j++) {
+            debug2++;
             var di = u[j];
             if (di == ai || di == bi || di == ci) {
               continue;
@@ -230,6 +238,8 @@ function decomposePolygon(polygon) {
               }
             }
           }
+          if (l == n)
+            console.log({ debug1, debug2 });
           dp.set(key, r);
           return r;
         }
