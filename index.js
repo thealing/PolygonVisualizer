@@ -37,6 +37,7 @@ function init() {
     const height = parseInt(heightInput.value);
     const margin = parseInt(marginInput.value);
     polygonPoints = generateRandomPolygon(pointsInput.value, proximityInput.value, margin, margin, width - margin, height - margin);
+    console.log("polygon size: " + polygonPoints.length);
     polygonFinished = true;
     decomposition = [];
   });
@@ -45,7 +46,8 @@ function init() {
       return;
     }
     var fixedPoints = fixPolygon(polygonPoints);
-    decomposition = triangulatePolygon(fixedPoints);
+    decomposition = decomposePolygon(fixedPoints);
+    console.log("decomp size: " + decomposition.length);
     if (fixedPoints != polygonPoints) {
       for (var polygon of decomposition) {
         for (var i = 0; i < polygon.length; i++) {

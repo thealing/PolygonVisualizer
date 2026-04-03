@@ -104,13 +104,11 @@ function generateRandomPolygon(n, d, x1, y1, x2, y2) {
       break;
     }
   }
-  console.log("final size: " + polygon.length);
   return polygon;
 }
 
 // O(n^2)
 function triangulatePolygon(polygon) {
-  return decomposePolygon(polygon);
   var n = polygon.length;
   var v = new Array(n);
   var l = new Array(n);
@@ -164,13 +162,86 @@ function triangulatePolygon(polygon) {
   return t;
 }
 
-// ???
+// O(n^3)
 function decomposePolygon(polygon) {
-  
-  function decompose(indices) {
-    if (indices <= 3) {
-      return [indices];
-    }
-    
+  var n = polygon.length;
+  var v = new Array(n);
+  for (var i = 0; i < n; i++) {
+    v[i] = { x: polygon[i].x, y: polygon[i].y };
   }
+  var w = new Array(n);
+  var ai = n - 2;
+  var bi = n - 1;
+  for (var ci = 0; ci < n; ci++) {
+    w[bi] = new Set();
+    for (var di = 0; di < n; di++) {
+      if (di == ai || di == bi || di == ci) {
+        continue;
+      }
+      if (isConvex(v[bi], v[di], v[ci]) && isConvex(v[di], v[bi], v[ai])) {
+        continue;
+      }
+      var b = true;
+      var ei = n - 1;
+      for (var fi = 0; fi < n; fi++) {
+        if (testSegments(v[bi], v[di], v[ei], v[fi])) {
+          b = false;
+          break;
+        }
+        ei = fi;
+      }
+      if (b) {
+        w[bi].add(di);
+      }
+    }
+    ai = bi;
+    bi = ci;
+  }
+  var dp = new Map();
+  function decompose(u) {
+    var key = u.join(',');
+    if (dp.has(key)) {
+      return dp.get(key);
+    }
+    var l = u.length;
+    if (l > 3) {
+      var ai = u[l - 2];
+      var bi = u[l - 1];
+      for (var i = 0; i < l; i++) {
+        var ci = u[i];
+        if (!isConvex(v[ai], v[bi], v[ci])) {
+          var r = null;
+          for (var j = 0; j < l; j++) {
+            var di = u[j];
+            if (di == ai || di == bi || di == ci) {
+              continue;
+            }
+            if (w[bi].has(di)) {
+              var s = (i + l - 1) % l;
+              var u1 = [];
+              var u2 = [];
+              for (var k = s; k != j; k = (k + 1) % l) u1.push(u[k]);
+              u1.push(u[j]);
+              for (var k = j; k != s; k = (k + 1) % l) u2.push(u[k]);
+              u2.push(u[s]);
+              var q = decompose(u1).concat(decompose(u2));
+              if (r == null || q.length < r.length) {
+                r = q;
+              }
+            }
+          }
+          dp.set(key, r);
+          return r;
+        }
+        ai = bi;
+        bi = ci;
+      }
+    }
+    return [u];
+  }
+  var a = new Array();
+  for (var i = 0; i < n; i++) {
+    a.push(i);
+  }
+  return decompose(a);
 }
