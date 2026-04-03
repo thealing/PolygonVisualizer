@@ -110,6 +110,7 @@ function generateRandomPolygon(n, d, x1, y1, x2, y2) {
 
 // O(n^2)
 function triangulatePolygon(polygon) {
+  return decomposePolygon(polygon);
   var n = polygon.length;
   var v = new Array(n);
   var l = new Array(n);
@@ -161,4 +162,15 @@ function triangulatePolygon(polygon) {
     t.push([l[i], i, r[i]]);
   }
   return t;
+}
+
+// ???
+function decomposePolygon(polygon) {
+  
+  function decompose(indices) {
+    if (indices <= 3) {
+      return [indices];
+    }
+    
+  }
 }
