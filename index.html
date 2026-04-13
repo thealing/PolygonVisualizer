@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-    <title>Polygon Triangulation</title>
+    <title>Polygon Visualizer</title>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
-  <div id="header">Polygon Triangulation</div>
+  <div id="header">Polygon Visualizer</div>
   <div id="toolbar">
     <label>Canvas Settings</label>
     <div class="container">
       <label title="Resolution Width">Width</label><input id="width-input" type="number" value="500"/>
       <label title="Resolution Height">Height</label><input id="height-input" type="number" value="500" />
       <label>Margin</label><input id="margin-input" type="number" value="50" />
+    </div>
+    <div class="separator"></div>
+    <label>Display Status</label>
+    <div class="container">
+		<label>Polygon Size:</label><label id="points-label">0</label>
+		<label>Diagonals:</label><label id="diagonals-label">0</label>
     </div>
     <div class="separator"></div>
     <label>Drawing</label>

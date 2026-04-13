@@ -7,6 +7,8 @@ function init() {
   undoButton = document.getElementById("undo-button");
   clearButton = document.getElementById("clear-button");
   pointsInput = document.getElementById("points-input");
+  pointsLabel = document.getElementById("points-label");
+  diagonalsLabel = document.getElementById("diagonals-label");
   proximityInput = document.getElementById("proximity-input");
   generateButton = document.getElementById("generate-button");
   triangulateButton = document.getElementById("triangulate-button");
@@ -27,18 +29,20 @@ function init() {
       return;
     }
     polygonPoints.pop()
+    pointsLabel.textContent = polygonPoints.length;
   });
   clearButton.addEventListener("click", function() {
     polygonFinished = false;
     polygonPoints = [];
     decomposition = [];
+    pointsLabel.textContent = polygonPoints.length;
   });
   generateButton.addEventListener("click", function() {
     const width = parseInt(widthInput.value);
     const height = parseInt(heightInput.value);
     const margin = parseInt(marginInput.value);
     polygonPoints = generateRandomPolygon(pointsInput.value, proximityInput.value, margin, margin, width - margin, height - margin);
-    console.log("generated polygon size: " + polygonPoints.length);
+    pointsLabel.textContent = polygonPoints.length;
     polygonFinished = true;
     decomposition = [];
   });
@@ -48,7 +52,6 @@ function init() {
     }
     var fixedPoints = fixPolygon(polygonPoints);
     decomposition = triangulatePolygon(fixedPoints);
-    console.log("triangulation size: " + decomposition.length);
     if (fixedPoints != polygonPoints) {
       for (var polygon of decomposition) {
         for (var i = 0; i < polygon.length; i++) {
@@ -63,7 +66,6 @@ function init() {
     }
     var fixedPoints = fixPolygon(polygonPoints);
     decomposition = decomposePolygon(fixedPoints);
-    console.log("decomposition size: " + decomposition.length);
     if (fixedPoints != polygonPoints) {
       for (var polygon of decomposition) {
         for (var i = 0; i < polygon.length; i++) {
@@ -82,7 +84,6 @@ function init() {
     const r = targetRadius;
     if (polygonPoints.length > 0 && (x - polygonPoints[0].x) ** 2 + (y - polygonPoints[0].y) ** 2 < r ** 2) {
       polygonFinished = true;
-      console.log("drawn polygon size: " + polygonPoints.length);
       return;
     }
     if (polygonPoints.length > 0 && (x - polygonPoints[polygonPoints.length - 1].x) ** 2 + (y - polygonPoints[polygonPoints.length - 1].y) ** 2 < r ** 2) {
@@ -94,6 +95,7 @@ function init() {
 }
 
 function animate() {
+  let diagonalCount = 0;
   displayCanvas.width = parseInt(widthInput.value);
   displayCanvas.height = parseInt(heightInput.value);
   displayContext.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
@@ -117,14 +119,17 @@ function animate() {
         const idx2 = polygon[(i + 1) % polygon.length];
         const p1 = polygonPoints[idx1];
         const p2 = polygonPoints[idx2];
-        const dist = Math.abs(idx1 - idx2);
+        const dist = idx1 - idx2;
         if (dist > 1 && dist < polygonPoints.length - 1) {
           displayContext.moveTo(p1.x, p1.y);
           displayContext.lineTo(p2.x, p2.y);
+          diagonalCount++;
         }
       }
     }
     displayContext.stroke();
   }
+  pointsLabel.textContent = polygonPoints.length;
+  diagonalsLabel.textContent = diagonalCount;
   requestAnimationFrame(animate);
 }
