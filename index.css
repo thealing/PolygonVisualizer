@@ -39,6 +39,7 @@ label, input {
   border-bottom: var(--border);
   display: flex;
   align-items: center;
+  font-family: Verdana;
 }
 
 #toolbar {
