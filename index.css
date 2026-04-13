@@ -64,6 +64,10 @@ label, input {
   border: var(--border);
 }
 
+.variable-label {
+  border: var(--border);
+}
+
 #toolbar button:hover {
   background: darkgray;
 }
