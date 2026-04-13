@@ -162,96 +162,76 @@ function triangulatePolygon(polygon) {
   return t;
 }
 
-// O(n^3)
+class HalfEdge {
+  constructor(origin) {
+    this.origin = origin;
+    this.next = null;
+    this.prev = null;
+    this.twin = null;
+    this.removed = false;
+  }
+}
+
+// O(n^2)
 function decomposePolygon(polygon) {
-  var n = polygon.length;
-  var v = new Array(n);
-  for (var i = 0; i < n; i++) {
-    v[i] = { x: polygon[i].x, y: polygon[i].y };
-  }
-  var w = new Array(n);
-  var ai = n - 2;
-  var bi = n - 1;
-  for (var ci = 0; ci < n; ci++) {
-    w[bi] = new Set();
-    for (var di = 0; di < n; di++) {
-      if (di == ai || di == bi || di == ci) {
-        continue;
+  var triangles = triangulatePolygon(polygon);
+  var edges = [];
+  var edgeMap = new Map();
+  for (var t of triangles) {
+    var h = t.map(p => new HalfEdge(p));
+    for (var ai = 1, bi = 2, ci = 0; ci < 3; ai = bi, bi = ci, ci++) {
+      var e = h[ai];
+      e.next = h[bi];
+      e.prev = h[ci];
+      var a = e.origin;
+      var b = e.next.origin;
+      var key = a < b ? `${a}-${b}` : `${b}-${a}`;
+      if (edgeMap.has(key)) {
+        var f = edgeMap.get(key);
+        e.twin = f;
+        f.twin = e;
       }
-      if (isConvex(v[bi], v[di], v[ci]) && isConvex(v[di], v[bi], v[ai])) {
-        continue;
+      else {
+        edgeMap.set(key, e);
       }
-      var b = true;
-      var ei = n - 1;
-      for (var fi = 0; fi < n; fi++) {
-        if (testSegments(v[bi], v[di], v[ei], v[fi])) {
-          b = false;
-          break;
-        }
-        ei = fi;
-      }
-      if (b) {
-        w[bi].add(di);
-      }
+      edges.push(e);
     }
-    ai = bi;
-    bi = ci;
   }
-  var debug1 = 0;
-  var debug2 = 0;
-  var dp = new Map();
-  function getKey(u) {
-    return [...u].sort().join(',');
-  }
-  function decompose(u) {
-    debug1 += u.length;
-    var key = getKey(u);
-    if (dp.has(key)) {
-      return dp.get(key);
+  for (var e of edges) {
+    if (!e.twin || e.removed) {
+      continue;
     }
-    var l = u.length;
-    if (l > 3) {
-      var ai = u[l - 2];
-      var bi = u[l - 1];
-      for (var i = 0; i < l; i++) {
-        var ci = u[i];
-        if (!isConvex(v[ai], v[bi], v[ci])) {
-          console.log(key);
-          var r = null;
-          for (var j = 0; j < l; j++) {
-            debug2++;
-            var di = u[j];
-            if (di == ai || di == bi || di == ci) {
-              continue;
-            }
-            if (w[bi].has(di)) {
-              var s = (i + l - 1) % l;
-              var u1 = [];
-              var u2 = [];
-              for (var k = s; k != j; k = (k + 1) % l) u1.push(u[k]);
-              u1.push(u[j]);
-              for (var k = j; k != s; k = (k + 1) % l) u2.push(u[k]);
-              u2.push(u[s]);
-              var q = decompose(u1).concat(decompose(u2));
-              if (r == null || q.length < r.length) {
-                r = q;
-              }
-            }
-          }
-          if (l == n)
-            console.log({ debug1, debug2 });
-          dp.set(key, r);
-          return r;
-        }
-        ai = bi;
-        bi = ci;
-      }
+    var t = e.twin;
+    var ap = polygon[e.prev.origin];
+    var a  = polygon[e.origin];
+    var an = polygon[t.next.next.origin];
+    var bp = polygon[t.prev.origin];
+    var b  = polygon[t.origin];
+    var bn = polygon[e.next.next.origin];
+    if (isConvex(ap, a, an) && isConvex(bp, b, bn)) {
+      e.prev.next = t.next;
+      t.next.prev = e.prev;
+      t.prev.next = e.next;
+      e.next.prev = t.prev;
+      e.removed = true;
+      t.removed = true;
     }
-    return [u];
   }
-  var a = new Array();
-  for (var i = 0; i < n; i++) {
-    a.push(i);
+  var r = [];
+  var v = new Set();
+  for (var e of edges) {
+    if (e.removed || v.has(e)) {
+      continue;
+    }
+    var p = [];
+    while (!v.has(e)) {
+      v.add(e);
+      p.push(e.origin);
+      e = e.next;
+    }
+    if (p.length > 2) {
+      r.push(p);
+    }
   }
-  return decompose(a);
+  return r;
 }
