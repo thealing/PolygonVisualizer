@@ -162,18 +162,17 @@ function triangulatePolygon(polygon) {
   return t;
 }
 
-class HalfEdge {
-  constructor(origin) {
-    this.origin = origin;
-    this.next = null;
-    this.prev = null;
-    this.twin = null;
-    this.removed = false;
-  }
-}
-
 // O(n^2)
 function decomposePolygon(polygon) {
+  class HalfEdge {
+    constructor(origin) {
+      this.origin = origin;
+      this.next = null;
+      this.prev = null;
+      this.twin = null;
+      this.removed = false;
+    }
+  }
   var triangles = triangulatePolygon(polygon);
   var edges = [];
   var edgeMap = new Map();
