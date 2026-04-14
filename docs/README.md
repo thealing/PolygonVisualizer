@@ -1,6 +1,6 @@
 # Polygon Visualizer
 
-An implementation and visualization of the ear clipping triangulation algorithm and the Hertel-Mehlhorn convex decomposition algorithm (based on an existing triangulation).
+An implementation and visualization of the ear clipping triangulation and the Hertel-Mehlhorn convex decomposition algorithm (based on an existing triangulation).
 
 Hosted at: https://triangulation.netlify.app
 
