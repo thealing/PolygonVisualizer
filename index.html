@@ -7,37 +7,41 @@
 </head>
 <body>
   <div id="header">Polygon Visualizer</div>
-  <div id="toolbar">
-    <label>Canvas Settings</label>
-    <div class="container">
-      <label title="Resolution Width">Width</label><input id="width-input" type="number" value="500"/>
-      <label title="Resolution Height">Height</label><input id="height-input" type="number" value="500" />
-      <label>Margin</label><input id="margin-input" type="number" value="50" />
+  <div id="layout">
+    <div id="content">
+      <canvas id="display-canvas"></canvas>
     </div>
-    <div class="separator"></div>
-    <label>Display Status</label>
-    <div class="container">
-      <label>Polygon Size:</label><label id="points-label" class="variable-label">0</label>
-      <label>Diagonals:</label><label id="diagonals-label" class="variable-label">0</label>
+    <div id="toolbar-container">
+      <div id="toolbar">
+        <label>Canvas Settings</label>
+        <div class="container">
+          <label title="Resolution Width">Width</label><input id="width-input" type="number" value="500"/>
+          <label title="Resolution Height">Height</label><input id="height-input" type="number" value="500" />
+          <label>Margin</label><input id="margin-input" type="number" value="50" />
+        </div>
+        <div class="separator"></div>
+        <label>Display Status</label>
+        <div class="container">
+          <label>Polygon Size</label><label id="points-label" class="variable-label">0</label>
+          <label>Diagonals</label><label id="diagonals-label" class="variable-label">0</label>
+        </div>
+        <div class="separator"></div>
+        <label>Drawing</label>
+        <button id="undo-button">Undo</button>
+        <button id="clear-button">Clear</button>
+        <div class="separator"></div>
+        <label>Random Polygon</label>
+        <div class="container">
+          <label>Samples</label><input id="points-input" type="number" value="200" />
+          <label>Proximity</label><input id="proximity-input" type="number" value="30" />
+        </div>
+        <button id="generate-button">Generate</button>
+        <div class="separator"></div>
+        <button id="triangulate-button">Triangulate</button>
+        <button id="decompose-button">Decompose</button>
+        <div class="separator"></div>
+      </div>
     </div>
-    <div class="separator"></div>
-    <label>Drawing</label>
-    <button id="undo-button">Undo</button>
-    <button id="clear-button">Clear</button>
-    <div class="separator"></div>
-    <label>Random Polygon</label>
-    <div class="container">
-      <label>Samples</label><input id="points-input" type="number" value="200" />
-      <label>Proximity</label><input id="proximity-input" type="number" value="30" />
-    </div>
-    <button id="generate-button">Generate</button>
-    <div class="separator"></div>
-    <button id="triangulate-button">Triangulate</button>
-    <button id="decompose-button">Decompose</button>
-    <div class="separator"></div>
-  </div>
-  <div id="content">
-    <canvas id="display-canvas"></canvas>
   </div>
   <script src="random.js"></script>
   <script src="geometry.js"></script>
